@@ -8,6 +8,23 @@ git clone https://github.com/BensonsPage/ml_based_phish-links-detection
 cd phish-links-detection
 
 Ensure you have python 3.8 ++
+## Install PIP if Not Installed
+
+python3 -m pip install / 
+
+python3 -m pip install --upgrade pip
+
+## Create the Virtual Environment
+
+python3 -m venv venv
+
+## start virtual environment
+
+source venv/bin/activate
+
+## Install Requirements
+
+pip install -r requirements.txt
 
 ## Fitting/Training the model
 

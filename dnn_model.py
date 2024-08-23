@@ -41,25 +41,21 @@ import dnn
 
 # Get training data from a csv file.
 
-df_data = pd.read_csv("tt-data/benign_phish_links_features.csv")
+df_data_path = "tt-data/benign_phish_links_features.csv"
 
-#Encoding 'File' as label benign & phish , naming the field as target
-df_data.File.replace({'tt-data/phish_links': 'phish', 'tt-data/benign_links_tiny' : 'benign', 'tt-data/benign_links': 'benign', 'tt-data/phish_links_tiny': 'phish'}, inplace = True)
-df_data['target'] = pd.get_dummies(df_data['File'])['benign'].astype('int')
-df_data.drop('File',axis = 1, inplace=True)
-
-# Normalize Data
-df_data.replace(True, 1, inplace = True)
-df_data.replace(False, 0, inplace = True)
-
+# read Data
+df_data = pd.read_csv(df_data_path)
+# Encoding 'File' as label benign(1) & phish(0), naming the field as target
+df_data.File.replace({'tt-data/phish_links': 0, 'tt-data/benign_links_tiny': 1, 'tt-data/benign_links': 1, 'tt-data/phish_links_tiny': 0}, inplace=True)
+df_data.rename(columns={'File': 'target'}, inplace=True)
+# Normalize Data Types
+df_data.replace(True, 1, inplace=True)
+df_data.replace(False, 0, inplace=True)
 
 # get rid of missing values
-tmp = df_data.isnull().sum().reset_index(name='missing_val')
-tmp[tmp['missing_val']!= 0]
-df_data.replace(True, 1, inplace = True)
-df_data.replace(False, 0, inplace = True)
+df_data = df_data.dropna()
 
-# Normarile data
+# Normalize data
 
 for ind in df_data.index:
     if (df_data['urlAge'][ind] <= 0):
@@ -71,20 +67,7 @@ for ind in df_data.index:
     elif (df_data['urlAge'][ind] <= 8191):
         df_data.at[ind,'urlAge'] = 0.75 # Old
     else:
-        df_data.at[ind,'urlAge'] = 1.0 # Older
-
-
-# for ind in df_data.index:
-#     if (df_data['urlIntendedLifeSpan'][ind] <= 0):
-#         df_data.at[ind,'urlIntendedLifeSpan'] = 0.0
-#     elif (df_data['urlIntendedLifeSpan'][ind] <= 365):
-#         df_data.at[ind,'urlIntendedLifeSpan'] = 0.25 # Short Term Life
-#     elif (df_data['urlIntendedLifeSpan'][ind] <= 4749):
-#         df_data.at[ind,'urlIntendedLifeSpan'] = 0.5 # Medium Term Life
-#     elif (df_data['urlIntendedLifeSpan'][ind] <= 8400):
-#         df_data.at[ind,'urlIntendedLifeSpan'] = 0.75 # Long Life
-#     else:
-#         df_data.at[ind,'urlIntendedLifeSpan'] = 1.0 # Very Long Term Life
+        df_data.at[ind, 'urlAge'] = 1.0 # Older
 
 for ind in df_data.index:
     if (df_data['numTitles'][ind] <= 0):
@@ -121,18 +104,6 @@ for ind in df_data.index:
         df_data.at[ind,'scriptLength'] = 0.75 # Small Body, used 75th Percentile
     else:
         df_data.at[ind,'scriptLength'] = 1.0 # Huge Body
-
-# for ind in df_data.index:
-#     if (df_data['urlLength'][ind] <= 0):
-#         df_data.at[ind,'urlLength'] = 0.00
-#     elif (df_data['urlLength'][ind] <= 35):
-#         df_data.at[ind,'urlLength'] = 0.25 # Short URL
-#     elif (df_data['urlLength'][ind] <= 46):
-#         df_data.at[ind,'urlLength'] = 0.50 # Medium length URL
-#     elif (df_data['urlLength'][ind] <= 61):
-#         df_data.at[ind,'urlLength'] = 0.75 # Long URL
-#     else:
-#         df_data.at[ind,'urlLength'] = 1.0 # Very Long URL
 
 for ind in df_data.index:
     if (df_data['specialChars'][ind] <= 0):
@@ -239,12 +210,11 @@ sns.set(font_scale = 0.5)
 sns.heatmap(df_data.corr(), annot = True, cmap = "YlGnBu");
 plt.show()
 
-# dropping columns with no correration
+# dropping columns with no correlation
 df_data.drop(columns = {'urlHasPortInString'}, inplace = True)
 
-
-
 # Setting the bar graph and pie chart parameters
+
 plt.rcParams['figure.figsize'] = [18, 8]
 sns.set(style = 'white', font_scale = 1.3)
 fig, ax = plt.subplots(1, 2)
@@ -256,14 +226,14 @@ bar.set(xlabel = 'Link Type', ylabel = 'Count')
 bar.set_title("Distribution of Phish(0) and Benign(1) Link", bbox={'facecolor':'0.8', 'pad':5})
 
 
-# Benign Vs Phish links piechart
+# Benign Vs Phish links pie-chart
 types = df_data['target'].value_counts()
 labels = list(types.index)
 aggregate = list(types.values)
 percentage = [(x*100)/sum(aggregate) for x in aggregate]
 print ("The percentages of Benign and Phish Links are : ", percentage)
 
-# Plotting the Piechart to see the percentage distribution of the Links
+# Plotting the Pie-chart to see the percentage distribution of the Links
 
 plt.rcParams.update({'font.size': 12})
 explode = (0, 0.1)
@@ -285,7 +255,7 @@ PAG_.set(title = 'Violin Plot for hasHttps Benign(1) and Phish(0)', xlabel = 'Li
 plt.show()
 
 # # Drop non-significant features
-df_data.drop(columns = {'scriptLength', 'urlLength', 'urlIntendedLifeSpan', 'bodyLength', 'numTitles', 'hasHttps', 'entropy', 'numberOfPeriods', 'urlLifeRemaining', 'daysSinceExpiration', 'has_ip', 'numParameters', 'isEncoded', 'urlIsLive', 'numEncodedChar', 'num_%20', 'sscr', 'bscr', 'numberOfDoubleDocuments', 'numDigits', 'numberOfIframes', 'numFragments', 'num_@', 'numberOfWhitespace'}, inplace = True) # All Who's Data/ Third Party Data Removed, Best 8 selected = 85.448
+df_data.drop(columns = {'scriptLength', 'urlLength', 'urlIntendedLifeSpan', 'bodyLength', 'numTitles', 'hasHttp', 'entropy', 'numberOfPeriods', 'urlLifeRemaining', 'daysSinceExpiration', 'has_ip', 'numParameters', 'isEncoded', 'urlIsLive', 'numEncodedChar', 'num_%20', 'sscr', 'bscr', 'numberOfDoubleDocuments', 'numDigits', 'numberOfIframes', 'numFragments', 'num_@', 'numberOfWhitespace'}, inplace = True) # All Who's Data/ Third Party Data Removed, Best 8 selected = 85.448
 
 
 print (df_data.shape)
@@ -299,9 +269,9 @@ sns.heatmap(df_data.corr(), annot = True, cmap = "YlGnBu");
 plt.show()
 
 
-#Train & Test Set
-X= df_data.iloc[: , :-1]
-# y = upsampled_df['Churn']
+# Train & Test Set
+
+X= df_data.iloc[:, :-1]
 y= df_data['target']
 
 train_x,test_x,train_y,test_y = train_test_split(X,y,random_state=42, test_size=0.2)
@@ -318,7 +288,7 @@ selector.fit(train_x, train_y)
 scores = -np.log10(selector.pvalues_)
 scores /= scores.max()
 
-# Plot Univariate features selection.
+# Plot univariate features selection.
 X_indices = np.arange(X.shape[-1])
 plt.figure(1)
 plt.clf()
@@ -337,7 +307,7 @@ print("\nScaled values of Test set \n")
 print(x_test)
 
 
-### Then convert the Train and Test sets into Tensors
+# Then convert the Train and Test sets into Tensors
 
 x_tensor =  torch.from_numpy(x_train).float()
 y_tensor =  torch.from_numpy(train_y.values.ravel()).float()
@@ -376,13 +346,12 @@ loss_func = nn.BCELoss() # nn.BCEWithLogitsLoss()
 # MOMENTUM= 0.99
 learning_rate = 0.001
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
-# optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate, weight_decay=5e-3)
 epochs = 50
 
 model.train()
 train_loss = []
 for epoch in range(epochs):
-    #Within each epoch run the subsets of data = batch sizes.
+    # Within each epoch run the subsets of data = batch sizes.
     for xb, yb in train_dl:
         y_pred = model(xb)            # Forward Propagation
         loss = loss_func(y_pred, yb)  # Loss Computation
@@ -409,14 +378,14 @@ with torch.no_grad():
         y_pred_tag = torch.round(y_test_pred)
         y_pred_list.append(y_pred_tag.detach().numpy())
 
-#Takes arrays and makes them list of list for each batch        
+# Takes arrays and makes them list of list for each batch
 y_pred_list = [a.squeeze().tolist() for a in y_pred_list]
-#flattens the lists in sequence
+# flattens the lists in sequence
 ytest_pred = list(itertools.chain.from_iterable(y_pred_list))
 y_true_test = test_y.values.ravel()
 
 
-conf_matrix = confusion_matrix(y_true_test ,ytest_pred)
+conf_matrix = confusion_matrix(y_true_test, ytest_pred)
 print("Confusion Matrix of the Test Set")
 print("-----------")
 print(conf_matrix)

@@ -12,11 +12,9 @@ import torch.nn as nn
 # Neural Network parameters (MLP, DNN)
 hiddenLayer1Size=48
 hiddenLayer2Size=int(hiddenLayer1Size/2)
-hiddenLayer3Size=int(hiddenLayer1Size/3)
-hiddenLayer4Size=int(hiddenLayer1Size/8)
-p=0.1
-features=8
-n_output =  1
+p = 0.1
+features = 8
+n_output = 1
 
 
 # # MLP
@@ -24,18 +22,16 @@ class dnn(nn.Module):
 
     def __init__(self):
         super(dnn, self).__init__()
-        self.layer_1 = nn.Linear(features, hiddenLayer1Size) 
+        self.layer_1 = nn.Linear(features, hiddenLayer1Size)
         self.layer_2 = nn.Linear(hiddenLayer1Size, hiddenLayer2Size)
-        self.layer_out = nn.Linear(hiddenLayer2Size, n_output) 
-        
-        
+        self.layer_out = nn.Linear(hiddenLayer2Size, n_output)
+
         self.relu = nn.ReLU()
-        self.sigmoid =  nn.Sigmoid()
+        self.sigmoid = nn.Sigmoid()
         self.dropout = nn.Dropout(p)
         self.batchnorm1 = nn.BatchNorm1d(hiddenLayer1Size)
         self.batchnorm2 = nn.BatchNorm1d(hiddenLayer2Size)
-        
-        
+
     def forward(self, inputs):
         t = self.relu(self.layer_1(inputs))
         t = self.batchnorm1(t)
