@@ -3,7 +3,7 @@
 This repo implements a solution for detecting phishing links using artificial neural network's multi-layer perceptron
 
 ## Getting started
-git clone [https://gitlab.com/ml621625/phish-links-detection](https://github.com/BensonsPage/ml_based_phish-links-detection)
+git clone https://github.com/BensonsPage/ml_based_phish-links-detection
 
 cd phish-links-detection
 
