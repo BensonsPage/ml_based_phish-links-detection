@@ -1,5 +1,5 @@
 """
-File: dnn.py
+File: Dnn.py
 Author: Benson Kimani - https://www.linkedin.com/in/benson-kimani-infotech/
 Date: 2024-06-15
 
@@ -18,10 +18,10 @@ n_output = 1
 
 
 # # MLP
-class dnn(nn.Module):
+class Dnn(nn.Module):
 
     def __init__(self):
-        super(dnn, self).__init__()
+        super(Dnn, self).__init__()
         self.layer_1 = nn.Linear(features, hiddenLayer1Size)
         self.layer_2 = nn.Linear(hiddenLayer1Size, hiddenLayer2Size)
         self.layer_out = nn.Linear(hiddenLayer2Size, n_output)
@@ -42,5 +42,5 @@ class dnn(nn.Module):
         
         return t
 
-# dnn = dnn()
-# print(dnn)
+# Dnn = Dnn()
+# print(Dnn)

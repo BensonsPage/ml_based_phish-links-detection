@@ -9,26 +9,29 @@ Description: Script to classify a link/URL as phish or benign based on a saved M
 
 # from torchvision import models
 import torch
-# import torchvision
-import dnn # Import model class
+# Import model class
+import Dnn
 
 import pandas as pd
 import numpy as np
 
 # # Phish Sample
-# features = {'numSubDomains': 0, 'hasHttps': 1, 'numImages': 0, 'numLinks': 0.0, 'specialChars': 0, 'sbr': 0, 'numberOfIncludedElements': 0, 'urlAge': 0.0}
+# link_features = {'numSubDomains': 0.25, 'hasHttps': 1, 'numImages': 0.25, 'numLinks': 0.0, 'specialChars': 0,
+#                  'sbr': 0.25, 'numberOfIncludedElements': 0, 'urlAge': 0.25}
 
-# # Benign Sample
-features = {'numSubDomains': 1.0, 'hasHttps': 1, 'numImages': 0.75, 'numLinks': 0.2, 'specialChars': 0.25, 'sbr': 0.25, 'numberOfIncludedElements': 1.0, 'urlAge': 0.75}
-class detect(object):
+# Benign Sample
+link_features = {'numSubDomains': 1.0, 'hasHttps': 1, 'numImages': 0.75, 'numLinks': 0.2, 'specialChars': 0.25,
+                 'sbr': 0.25, 'numberOfIncludedElements': 1.0, 'urlAge': 0.75}
 
+
+class Detect(object):
     def __init__(self, features):
         self.features = features
 
     def get_detection(self):
 
         # Configs
-        PATH = 'state_dict_model.pth'
+        path = 'state_dict_model.pth'
         classification_id = None
 
         # Normalize Data
@@ -37,8 +40,8 @@ class detect(object):
         link_data.replace(False, 0, inplace = True)
 
         # Load Model
-        model = dnn.dnn()
-        model.load_state_dict(torch.load(PATH))
+        model = Dnn.Dnn()
+        model.load_state_dict(torch.load(path))
         # Since we are using our model only for inference, switch to `eval` mode:
         model.eval()
 
@@ -68,5 +71,5 @@ class detect(object):
                 return classification_id
 
 
-p1 = detect(features)
+p1 = Detect(link_features)
 p1.get_detection()
